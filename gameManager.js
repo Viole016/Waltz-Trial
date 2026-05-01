@@ -63,7 +63,8 @@
       progress: "Progress",
       resetProgress: "Reset Progress",
       achievements: "Achievements",
-      resetConfirm: "Reset all unlocked levels, scores, failed attempts and achievements?",
+      resetConfirm:
+        "Reset all unlocked levels, scores, failed attempts and achievements?",
       progressReset: "Progress reset.",
       usernameSaved: "Username saved.",
       light: "Light",
@@ -296,13 +297,13 @@
     },
     enforceLauncherForPersistentAudio() {
       const file = currentFileName().toLowerCase();
-      const isLauncher = file === "launcher.html";
+      const isLauncher = file === "index.html" || file === "";
       const isInside = window.self !== window.top;
       const skip =
         new URLSearchParams(window.location.search).get("standalone") === "1";
       if (!isLauncher && !isInside && !skip)
         window.location.replace(
-          "Launcher.html?page=" + encodeURIComponent(currentFileName()),
+          "index.html?page=" + encodeURIComponent(currentFileName()),
         );
     },
     injectGlobalStyles() {
@@ -418,7 +419,11 @@
       );
     },
     getFailureCount() {
-      return Math.max(parseInt(localStorage.getItem(STORAGE_KEYS.failureCount) || "0", 10) || 0, 0);
+      return Math.max(
+        parseInt(localStorage.getItem(STORAGE_KEYS.failureCount) || "0", 10) ||
+          0,
+        0,
+      );
     },
     recordFailure() {
       const count = this.getFailureCount() + 1;
@@ -473,7 +478,8 @@
       return Boolean(this.getAchievements()[id]);
     },
     checkEndingAchievement() {
-      if (this.getEndingType() === "good") this.unlockAchievement("true_ending");
+      if (this.getEndingType() === "good")
+        this.unlockAchievement("true_ending");
     },
     showToast(title, msg) {
       if (!document.body) return;
