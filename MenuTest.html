@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stages - Waltz Trial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet" />
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box} body{min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:"Patrick Hand",cursive}.container{width:900px;min-height:500px;border-radius:30px;border:1px solid rgba(255,255,255,.1);padding:40px 60px;background:rgba(10,10,15,.8);backdrop-filter:blur(10px);box-shadow:0 15px 35px rgba(0,0,0,.5)}.header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid rgba(255,255,255,.1);padding-bottom:20px}.back-btn{font-size:30px;cursor:pointer;color:#888;text-decoration:none;transition:color .3s}.back-btn:hover{color:#6fa8ff}.level-title{font-size:45px;color:#fff;letter-spacing:2px;text-shadow:0 0 10px rgba(255,255,255,.2)}.status-box{text-align:right}.unlocked-status{font-size:24px;color:#5fd37d}.global-score{font-size:22px;color:#6fa8ff}.levels{margin-top:35px;display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:center}.level-card{width:145px;height:125px;border-radius:20px;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:8px;font-size:30px;text-decoration:none;transition:all .3s ease;position:relative;overflow:hidden}.unlocked{border:2px solid #6fa8ff;background:rgba(111,168,255,.05);color:#6fa8ff;cursor:pointer;box-shadow:0 0 15px rgba(111,168,255,.2)}.unlocked:hover{transform:translateY(-5px);background:rgba(111,168,255,.15);box-shadow:0 5px 25px rgba(111,168,255,.4)}.locked{border:2px solid #444;background:rgba(0,0,0,.4);color:#555;cursor:not-allowed}.level-score{font-size:18px;opacity:.8}.lock-icon{font-size:42px}@media(max-width:760px){.container{width:92vw;padding:30px 24px}.header{flex-direction:column;gap:12px}.status-box{text-align:center}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header"><a href="Front_Page.html" class="back-btn" data-i18n="back">← Back</a><div class="level-title" data-i18n="stages">Stages</div><div class="status-box"><div class="unlocked-status" id="unlock-status"></div><div class="global-score" id="global-score"></div></div></div>
+    <div class="levels" id="level-container"></div>
+  </div>
+  <script src="gameManager.js"></script>
+  <script>
+    function renderMenu(){ const total=GameManager.totalLevels, unlocked=GameManager.getUnlockedLevel(); document.getElementById("unlock-status").textContent=`${GameManager.t("unlocked")} ${unlocked}/${total}`; document.getElementById("global-score").textContent=`${GameManager.getUsername()} ${GameManager.t("score")}: ${GameManager.getGlobalScore()}`; const c=document.getElementById("level-container"); c.innerHTML=""; for(let i=1;i<=total;i++){ const card=document.createElement("a"); card.className="level-card"; if(i<=unlocked){ card.classList.add("unlocked"); card.href=`Level${i}.html`; card.innerHTML=`<div>Lv ${i}</div><div class="level-score">${GameManager.t("best")}: ${GameManager.getLevelScore(i)}</div>`; } else { card.classList.add("locked"); card.innerHTML=`<div class="lock-icon">🔒</div><div class="level-score">${GameManager.t("locked")} Lv ${i}</div>`; } c.appendChild(card); } }
+    document.addEventListener("DOMContentLoaded", renderMenu);
+  </script>
+</body>
+</html>

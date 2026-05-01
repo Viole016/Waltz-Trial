@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Waltz Trial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet" />
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      min-height:100vh;
+      font-family:"Patrick Hand", cursive;
+      overflow:hidden;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:
+        linear-gradient(rgba(10,12,18,.28), rgba(10,12,18,.54)),
+        url("img/AncientBG.jpg") center / cover no-repeat;
+    }
+
+    body.front-page.waltz-dark,
+    body.front-page.waltz-light {
+      background:
+        linear-gradient(rgba(10,12,18,.28), rgba(10,12,18,.54)),
+        url("img/AncientBG.jpg") center / cover no-repeat !important;
+    }
+
+    body::before {
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,.12), transparent 34%),
+        radial-gradient(circle at bottom, rgba(0,0,0,.38), transparent 48%);
+    }
+
+    .front-menu {
+      position:relative;
+      z-index:1;
+      width:min(760px, 92vw);
+      min-height:min(720px, 92vh);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:22px;
+      padding:30px;
+      background:transparent!important;
+      border:0!important;
+      box-shadow:none!important;
+    }
+
+    .stone-title,
+    .stone-btn {
+      position:relative;
+      text-align:center;
+      color:#fff;
+      text-shadow:3px 4px 0 rgba(0,0,0,.25);
+      font-weight:bold;
+      letter-spacing:1px;
+      background:#b9b9b9;
+      border:8px solid #5e5e5e;
+      box-shadow:
+        inset 0 6px #dddddd,
+        inset 0 -8px #858585,
+        0 10px 0 rgba(0,0,0,.24),
+        0 16px 30px rgba(0,0,0,.24);
+    }
+
+    .stone-title {
+      width:min(600px, 90vw);
+      border-radius:26px;
+      padding:14px 20px 18px;
+      font-size:clamp(42px, 8vw, 66px);
+      margin-bottom:4px;
+    }
+
+    .stone-btn {
+      width:min(330px, 78vw);
+      border-radius:20px;
+      padding:13px 22px 17px;
+      font-size:clamp(31px, 5.2vw, 42px);
+      font-family:"Patrick Hand", cursive;
+      cursor:pointer;
+      transition:transform .16s ease, filter .16s ease, box-shadow .16s ease;
+    }
+
+    .stone-btn:hover {
+      transform:translateY(-4px) scale(1.03);
+      filter:brightness(1.07);
+    }
+
+    .stone-btn:active {
+      transform:translateY(4px);
+      box-shadow:inset 0 6px #dddddd, inset 0 -8px #858585, 0 3px 0 rgba(0,0,0,.24);
+    }
+
+    .footer-health {
+      width:min(440px,80vw);
+      height:40px;
+      border-radius:20px;
+      border:6px solid #5f5f5f;
+      background:#c8c8c8;
+      padding:5px;
+      margin-top:14px;
+      box-shadow:0 8px 0 rgba(0,0,0,.22);
+    }
+
+    .footer-health span {
+      display:block;
+      height:100%;
+      border-radius:14px;
+      background:linear-gradient(90deg,#d83232,#ff5353);
+      border:2px solid #9e2424;
+    }
+
+    @media (max-height: 650px) {
+      body { overflow:auto; }
+      .front-menu { min-height:650px; }
+      .stone-btn { padding:10px 20px 13px; }
+    }
+  </style>
+</head>
+<body class="front-page">
+  <main class="front-menu">
+    <div class="stone-title" data-i18n="title">Waltz Trial</div>
+    <button class="stone-btn" onclick="location.href='MenuTest.html'" data-i18n="begin">Start</button>
+    <button class="stone-btn" onclick="location.href='Achievements.html'" data-i18n="achievements">Achievements</button>
+    <button class="stone-btn" onclick="location.href='Setting_Page.html'" data-i18n="settings">Settings</button>
+    <button class="stone-btn" onclick="location.href='Exit_Page.html'" data-i18n="exit">Exit</button>
+    <div class="footer-health"><span></span></div>
+  </main>
+  <script src="gameManager.js"></script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Settings - Waltz Trial</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing:border-box; }
+
+    body {
+      margin:0;
+      font-family:Arial, sans-serif;
+      color:#f4efe7;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      padding:24px;
+    }
+
+    .settings-container {
+      width:min(960px, 94vw);
+      min-height:540px;
+      border-radius:32px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(12,14,21,.88);
+      padding:44px;
+      position:relative;
+      box-shadow:0 22px 65px rgba(0,0,0,.36);
+    }
+
+    .back-btn {
+      position:absolute;
+      top:22px;
+      left:24px;
+      cursor:pointer;
+      font-size:18px;
+      opacity:.9;
+      padding:8px 12px;
+      border-radius:999px;
+      transition:.18s ease;
+    }
+
+    .back-btn:hover { background:rgba(255,255,255,.1); opacity:1; }
+
+    h1 {
+      margin:24px 0 28px;
+      text-align:center;
+      letter-spacing:.5px;
+      font-size:clamp(32px, 5vw, 46px);
+    }
+
+    .settings-list {
+      display:grid;
+      gap:18px;
+      margin-bottom:42px;
+    }
+
+    .section {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+      padding:18px 20px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
+      background:rgba(255,255,255,.055);
+      font-size:21px;
+    }
+
+    .section-label {
+      font-weight:700;
+      min-width:180px;
+    }
+
+    .section-control {
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+      flex:1;
+      flex-wrap:wrap;
+    }
+
+    input[type="text"] {
+      width:min(320px, 100%);
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.28);
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      font-size:17px;
+      outline:none;
+    }
+
+    input[type="text"]:focus {
+      border-color:#8eb2ff;
+      box-shadow:0 0 0 3px rgba(142,178,255,.16);
+    }
+
+    input[type="range"] {
+      width:min(420px, 100%);
+      accent-color:#7ea8ff;
+    }
+
+    button,
+    .save-btn,
+    .reset-btn {
+      padding:11px 20px;
+      border-radius:14px;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(255,255,255,.08);
+      color:white;
+      font-size:16px;
+      transition:transform .16s ease, background .16s ease, color .16s ease, border-color .16s ease;
+    }
+
+    button:hover,
+    .save-btn:hover,
+    .reset-btn:hover {
+      transform:translateY(-1px);
+      background:#7ea8ff;
+      border-color:#7ea8ff;
+      color:#10141d;
+    }
+
+    .toggle-group {
+      display:flex;
+      gap:10px;
+      padding:5px;
+      border-radius:16px;
+      background:rgba(0,0,0,.18);
+    }
+
+    .toggle-group button { min-width:92px; }
+
+    .active {
+      background:#7ea8ff!important;
+      border-color:#7ea8ff!important;
+      color:#10141d!important;
+      font-weight:700;
+    }
+
+    .reset-btn {
+      background:rgba(180,64,64,.18);
+      border-color:rgba(255,120,120,.32);
+    }
+
+    .reset-btn:hover {
+      background:#de6060;
+      border-color:#de6060;
+      color:#171010;
+    }
+
+    .footer {
+      position:absolute;
+      bottom:20px;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:14px;
+      opacity:.62;
+      white-space:nowrap;
+    }
+
+    @media(max-width:760px) {
+      body { padding:14px; align-items:flex-start; }
+      .settings-container { padding:58px 20px 54px; }
+      .section { align-items:flex-start; flex-direction:column; gap:12px; }
+      .section-label { min-width:0; }
+      .section-control { justify-content:flex-start; width:100%; }
+      input[type="range"], input[type="text"] { width:100%; }
+      .toggle-group { width:100%; }
+      .toggle-group button { flex:1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-container">
+    <div class="back-btn" onclick="goBack()" data-i18n="back">← Back</div>
+    <h1 data-i18n="settingsTitle">Settings</h1>
+
+    <div class="settings-list">
+      <div class="section">
+        <div class="section-label" data-i18n="username">Username</div>
+        <div class="section-control">
+          <input type="text" id="usernameInput" maxlength="18" />
+          <button class="save-btn" onclick="saveUsername()" data-i18n="save">Save</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label" data-i18n="music">Music</div>
+        <div class="section-control">
+          <input type="range" id="volumeSlider" min="0" max="100" value="50" />
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label" data-i18n="theme">Light / Dark</div>
+        <div class="section-control">
+          <div class="toggle-group">
+            <button id="lightBtn" onclick="setTheme('light')" data-i18n="light">Light</button>
+            <button id="darkBtn" onclick="setTheme('dark')" data-i18n="dark">Dark</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label" data-i18n="language">Language</div>
+        <div class="section-control">
+          <div class="toggle-group">
+            <button id="engBtn" onclick="setLanguage('ENG')">ENG</button>
+            <button id="mmBtn" onclick="setLanguage('MM')">MM</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label" data-i18n="progress">Progress</div>
+        <div class="section-control">
+          <button class="reset-btn" onclick="resetProgress()" data-i18n="resetProgress">Reset Progress</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Developed and made certified. © All Rights Reserved</div>
+  </div>
+
+  <script src="gameManager.js"></script>
+  <script>
+    function goBack(){
+      window.location.href = "Front_Page.html";
+    }
+
+    function refreshSettingsUI(){
+      const theme = GameManager.getTheme();
+      const lang = GameManager.getLanguage();
+
+      document.getElementById("usernameInput").value =
+        GameManager.getUsername() === "Player" ? "" : GameManager.getUsername();
+
+      document.getElementById("volumeSlider").value = GameManager.getVolume();
+      document.getElementById("lightBtn").classList.toggle("active", theme === "light");
+      document.getElementById("darkBtn").classList.toggle("active", theme === "dark");
+      document.getElementById("engBtn").classList.toggle("active", lang === "ENG");
+      document.getElementById("mmBtn").classList.toggle("active", lang === "MM");
+
+      GameManager.applyLanguage();
+    }
+
+    function setTheme(theme){
+      GameManager.setTheme(theme);
+      refreshSettingsUI();
+    }
+
+    function setLanguage(language){
+      GameManager.setLanguage(language);
+      refreshSettingsUI();
+    }
+
+    function saveUsername(){
+      GameManager.setUsername(document.getElementById("usernameInput").value || "Player");
+      alert(GameManager.t("usernameSaved"));
+    }
+
+    function resetProgress(){
+      if(confirm(GameManager.t("resetConfirm"))){
+        GameManager.resetProgress();
+        alert(GameManager.t("progressReset"));
+        refreshSettingsUI();
+      }
+    }
+
+    document.getElementById("volumeSlider").addEventListener("input", function(event){
+      GameManager.setVolume(event.target.value);
+    });
+
+    document.addEventListener("DOMContentLoaded", refreshSettingsUI);
+  </script>
+</body>
+</html>

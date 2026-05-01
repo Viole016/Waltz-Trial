@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet" />
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:"Patrick Hand", cursive; background:linear-gradient(135deg,#0c0f14,#141822); color:white; min-height:100vh; display:flex; justify-content:center; align-items:center; }
+    .container { width:min(1120px,94vw); min-height:620px; padding:64px 56px 48px; border:2px solid #aaa; border-radius:30px; background:rgba(0,0,0,.62); position:relative; box-shadow:0 20px 55px rgba(0,0,0,.28); }
+    .timer { position:absolute; top:-25px; left:50%; transform:translateX(-50%); font-size:26px; background:#111; padding:8px 25px; border-radius:20px; border:2px solid #5fd37d; color:#5fd37d; }
+    .collected-display { position:absolute; top:15px; right:25px; font-size:20px; color:#86a8ff; }
+    .question-box { margin-top:70px; text-align:center; }
+    .question { font-size:30px; margin:0 auto 42px; max-width:920px; line-height:1.45; letter-spacing:.2px; padding:0 8px; }
+    .answers { display:grid; grid-template-columns:repeat(2, minmax(260px, 1fr)); gap:22px; max-width:780px; margin:0 auto; }
+    .answers button { padding:18px 22px; min-height:78px; font-size:22px; border-radius:18px; border:2px solid #5fd37d; background:rgba(255,255,255,.035); color:white; cursor:pointer; transition:.25s; font-family:inherit; line-height:1.25; }
+    .answers button:hover { background:#5fd37d; color:black; transform:scale(1.03); }
+    .message { margin-top:28px; font-size:24px; min-height:36px; color:#f5d57a; }
+    .code-section { display:none; text-align:center; margin-top:90px; }
+    .code-section p { font-size:26px; margin-bottom:16px; }
+    .code-section input { padding:10px; font-size:24px; width:150px; text-align:center; border-radius:10px; border:1px solid #aaa; }
+    .code-section button { padding:10px 20px; font-size:20px; margin-left:10px; border-radius:10px; cursor:pointer; font-family:inherit; }
+    @media(max-width:720px){
+      .answers{grid-template-columns:1fr;}
+      .container{padding:56px 24px 34px; min-height:620px;}
+      .question{font-size:25px; margin-bottom:30px;}
+      .answers button{min-height:68px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="timer" id="timer">03:00</div>
+    <div class="collected-display"><span data-i18n="digits">Digits</span>: <span id="collectedDigits">- - -</span></div>
+    <div class="question-box"><div class="question" id="question"></div><div class="answers" id="answers"></div><div class="message" id="message"></div></div>
+    <div class="code-section" id="codeSection"><p data-i18n="enterCode">Enter the 3-digit code:</p><input type="text" id="codeInput" maxlength="3" inputmode="numeric" /><button onclick="checkCode()" data-i18n="submit">Submit</button><div id="codeMessage" class="message"></div></div>
+  </div>
+  <script src="gameManager.js"></script>
+  <script>
+    let time = 180, current = 0, correctAnswers = 0, mistakes = 0;
+    let timerDisplay = document.getElementById("timer");
+    const questions = [
+      { qKey:"l1q1", options:["l1q1a","l1q1b","l1q1c","l1q1d"], correct:"l1q1c", digit:"0" },
+      { qKey:"l1q2", options:["l1q2a","l1q2b","l1q2c","l1q2d"], correct:"l1q2c", digit:"1" },
+      { qKey:"l1q3", options:["l1q3a","l1q3b","l1q3c","l1q3d"], correct:"l1q3c", digit:"6" }
+    ];
+    let collectedDigits = [];
+    let countdown = setInterval(() => { time--; let m=Math.floor(time/60), s=time%60; timerDisplay.textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s; if(time<=0){ clearInterval(countdown); GameManager.handleLevelFail(1, GameManager.t("failed")); } }, 1000);
+    function updateDigitDisplay(){ document.getElementById("collectedDigits").textContent = collectedDigits.length ? collectedDigits.join(" ") : "- - -"; }
+    function loadQuestion(){ if(current>=questions.length){ document.querySelector(".question-box").style.display="none"; document.getElementById("codeSection").style.display="block"; GameManager.applyLanguage(); return; } const q=questions[current]; document.getElementById("question").textContent=GameManager.t(q.qKey); const div=document.getElementById("answers"); div.innerHTML=""; q.options.forEach(key=>{ const btn=document.createElement("button"); btn.textContent=GameManager.t(key); btn.onclick=()=>checkAnswer(key); div.appendChild(btn); }); }
+    function checkAnswer(selectedKey){ const q=questions[current]; if(selectedKey===q.correct){ correctAnswers++; collectedDigits.push(q.digit); updateDigitDisplay(); GameManager.playSfx("correct"); document.getElementById("message").textContent = GameManager.t("correctDigit") + " " + q.digit; current++; setTimeout(()=>{ document.getElementById("message").textContent=""; loadQuestion(); }, 1100); } else { mistakes++; time=Math.max(1,time-15); GameManager.playSfx("wrong"); document.getElementById("message").textContent=GameManager.t("wrongAnswer"); } }
+    function checkCode(){ const input=document.getElementById("codeInput").value.trim(); const code=collectedDigits.join(""); if(input===code){ correctAnswers++; clearInterval(countdown); GameManager.playSfx("correct"); const score=GameManager.completeLevel(1,{timeRemaining:time,correctAnswers,totalQuestions:questions.length+1,mistakes}); document.getElementById("codeMessage").textContent=`${GameManager.t("levelComplete")} ${GameManager.t("score")}: ${score}. ${GameManager.t("returning")}`; setTimeout(()=>{window.location.href="MenuTest.html"},1400); } else { mistakes++; time=Math.max(1,time-15); GameManager.playSfx("wrong"); document.getElementById("codeMessage").textContent=GameManager.t("wrongCode"); } }
+    document.addEventListener("DOMContentLoaded",()=>{loadQuestion(); updateDigitDisplay();});
+  </script>
+</body>
+</html>

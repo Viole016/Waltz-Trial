@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ending - Waltz Trial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      min-height:100vh;
+      background:#050507;
+      color:#eee;
+      font-family:"Patrick Hand", cursive;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
+
+    .ending-card {
+      width:min(1060px, 96vw);
+      background:rgba(0,0,0,.78);
+      border:2px solid rgba(255,255,255,.16);
+      border-radius:24px;
+      padding:22px;
+      box-shadow:0 25px 80px rgba(0,0,0,.7);
+    }
+
+    .scene {
+      min-height:430px;
+      border-radius:14px;
+      overflow:hidden;
+      position:relative;
+      border:1px solid rgba(255,255,255,.14);
+      background-position:center;
+      background-size:cover;
+      background-repeat:no-repeat;
+    }
+
+    .scene.good { background-image:url("img/Good.jpg"); }
+    .scene.bad { background-image:url("img/Bad.webp"); }
+
+    .scene::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to bottom, rgba(0,0,0,.12), rgba(0,0,0,.34));
+      pointer-events:none;
+    }
+
+    .scene.bad::before {
+      background:linear-gradient(to bottom, rgba(0,0,0,.18), rgba(0,0,0,.54));
+    }
+
+    .scene::after {
+      content:"";
+      position:absolute;
+      inset:0;
+      image-rendering:pixelated;
+      background-size:42px 42px;
+      opacity:.08;
+      background-image:linear-gradient(90deg,#000 1px,transparent 1px),linear-gradient(#000 1px,transparent 1px);
+      pointer-events:none;
+    }
+
+    .dialogue {
+      margin-top:20px;
+      border:4px solid #d8d8d8;
+      background:#0d0d11;
+      color:#f3f3f3;
+      padding:22px 28px;
+      min-height:150px;
+      box-shadow:inset 0 0 0 2px #333;
+    }
+
+    h1 { font-size:clamp(32px, 5vw, 44px); margin:0 0 10px; }
+    .dialogue p { font-size:clamp(22px, 3vw, 27px); line-height:1.28; margin:0 0 12px; }
+    .attempts { color:#9fd3ff; }
+    .actions { display:flex; gap:14px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap; }
+
+    button {
+      font-family:inherit;
+      font-size:21px;
+      padding:10px 18px;
+      border-radius:10px;
+      border:1px solid #ddd;
+      background:transparent;
+      color:#fff;
+      cursor:pointer;
+    }
+
+    button:hover { background:#fff; color:#111; }
+
+    @media(max-width:700px) {
+      body { padding:12px; align-items:flex-start; }
+      .ending-card { padding:14px; }
+      .scene { min-height:300px; }
+      .dialogue { padding:18px; }
+      .actions { justify-content:center; }
+      button { flex:1; min-width:130px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="ending-card">
+    <section id="scene" class="scene" aria-label="Ending scene"></section>
+
+    <section class="dialogue">
+      <h1 id="endingTitle"></h1>
+      <p id="endingText"></p>
+      <p class="attempts" id="failedAttempts"></p>
+      <div class="actions">
+        <button onclick="location.href='Front_Page.html'" data-i18n="returnTitle">Return to Title</button>
+        <button onclick="location.href='MenuTest.html'" data-i18n="menu">Menu</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="gameManager.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      try {
+        const endingType = GameManager.getEndingType();
+        const good = endingType === "good";
+        const scene = document.getElementById("scene");
+
+        scene.classList.add(good ? "good" : "bad");
+        if (good) GameManager.checkEndingAchievement();
+
+        document.getElementById("endingTitle").textContent =
+          GameManager.t(good ? "goodEndingTitle" : "badEndingTitle");
+        document.getElementById("endingText").textContent =
+          GameManager.t(good ? "goodEndingText" : "badEndingText");
+        document.getElementById("failedAttempts").textContent =
+          `${GameManager.t("failedAttempts")}: ${GameManager.getFailureCount()}`;
+
+        GameManager.applyLanguage();
+      } catch (error) {
+        console.error("Ending screen failed:", error);
+        document.getElementById("endingTitle").textContent = "Ending";
+        document.getElementById("endingText").textContent =
+          "The ending could not be loaded correctly. Please return to the menu and try again.";
+      }
+    });
+  </script>
+</body>
+</html>

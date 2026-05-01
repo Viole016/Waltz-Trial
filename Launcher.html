@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Waltz Trial Launcher</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0f0f14;
+        font-family: Arial, sans-serif;
+      }
+      #gameFrame {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+      }
+      #startOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+          radial-gradient(circle, rgba(111, 168, 255, 0.25), transparent 38%),
+          linear-gradient(135deg, #0f0f14, #1a1a24);
+        color: #eee;
+      }
+      .start-card {
+        width: min(560px, 90vw);
+        padding: 42px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 28px;
+        background: rgba(10, 10, 15, 0.82);
+        box-shadow: 0 18px 55px rgba(0, 0, 0, 0.55);
+        text-align: center;
+      }
+      .start-card h1 {
+        margin: 0 0 12px;
+        font-size: 46px;
+        letter-spacing: 1px;
+      }
+      .start-card p {
+        margin: 0 0 28px;
+        opacity: 0.86;
+        font-size: 20px;
+      }
+      .start-card button {
+        padding: 14px 38px;
+        border-radius: 14px;
+        border: 2px solid #6fa8ff;
+        background: transparent;
+        color: #eee;
+        font-size: 22px;
+        cursor: pointer;
+        transition: 0.25s ease;
+      }
+      .start-card button:hover {
+        background: #6fa8ff;
+        color: #111;
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 0 24px rgba(111, 168, 255, 0.65);
+      }
+    </style>
+  </head>
+  <body>
+    <iframe id="gameFrame" title="Waltz Trial"></iframe>
+    <div id="startOverlay">
+      <div class="start-card">
+        <h1>Waltz Trial</h1>
+        <p>Welcome to Waltz Judgement, your trial awaits.</p>
+        <button id="startButton">Start Game</button>
+      </div>
+    </div>
+    <audio
+      id="waltz-bg-music"
+      src="audio/Mission.mp3"
+      loop
+      preload="auto"
+    ></audio>
+    <script>
+      const frame = document.getElementById("gameFrame"),
+        overlay = document.getElementById("startOverlay"),
+        startButton = document.getElementById("startButton"),
+        audio = document.getElementById("waltz-bg-music");
+      const params = new URLSearchParams(window.location.search);
+      frame.src = params.get("page") || "Front_Page.html";
+      function getSavedVolume() {
+        const saved = parseInt(
+          localStorage.getItem("waltz_volume") || "50",
+          10,
+        );
+        return Math.min(Math.max(saved || 0, 0), 100);
+      }
+      function syncAudioSettings() {
+        const volume = getSavedVolume();
+        const muted =
+          localStorage.getItem("waltz_muted") === "true" || volume === 0;
+        audio.volume = volume / 100;
+        audio.muted = muted;
+      }
+      window.WaltzAudioController = {
+        sync: syncAudioSettings,
+        play: function () {
+          syncAudioSettings();
+          return audio.play().catch(() => {});
+        },
+        pause: function () {
+          audio.pause();
+        },
+      };
+      window.addEventListener("storage", syncAudioSettings);
+      window.addEventListener("message", (e) => {
+        if (e.data && e.data.type === "WALTZ_AUDIO_SYNC") {
+          syncAudioSettings();
+          audio.play().catch(() => {});
+        }
+      });
+      startButton.addEventListener("click", async () => {
+        syncAudioSettings();
+        await audio.play().catch(() => {});
+        overlay.style.display = "none";
+      });
+      syncAudioSettings();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Level 2</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Patrick Hand", cursive;
+        background: linear-gradient(135deg, #0c0f14, #141822);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1100px;
+        padding: 40px;
+        border: 2px solid #aaa;
+        border-radius: 30px;
+        background: rgba(0, 0, 0, 0.6);
+        text-align: center;
+        position: relative;
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        font-size: 22px;
+        color: #ccc;
+      }
+
+      .number-display {
+        font-size: 60px;
+        letter-spacing: 15px;
+        margin-top: 40px;
+        min-height: 80px;
+      }
+
+      .time-bar-container {
+        width: 300px;
+        height: 6px;
+        background: #333;
+        margin: 20px auto;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      .time-bar {
+        height: 100%;
+        width: 100%;
+        background: #5fd37d;
+        transition: width 0.1s linear;
+      }
+
+      .input-section {
+        display: none;
+        margin-top: 40px;
+      }
+
+      .input-section input {
+        font-size: 28px;
+        padding: 10px;
+        text-align: center;
+        border-radius: 10px;
+        border: none;
+        width: 300px;
+        letter-spacing: 8px;
+      }
+
+      .input-section button {
+        margin-top: 20px;
+        padding: 8px 20px;
+        font-size: 18px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      .message {
+        margin-top: 20px;
+        font-size: 20px;
+        min-height: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2 id="roundTitle">Round 1</h2>
+
+      <div class="number-display" id="numberDisplay"></div>
+
+      <div class="time-bar-container">
+        <div class="time-bar" id="timeBar"></div>
+      </div>
+
+      <div class="input-section" id="inputSection">
+        <p data-i18n="enterSequence">Enter the number sequence:</p>
+        <input type="text" id="userInput" />
+        <br />
+        <button onclick="checkAnswer()" data-i18n="submit">Submit</button>
+      </div>
+
+      <div class="message" id="message"></div>
+    </div>
+
+    <script src="gameManager.js"></script>
+    <script>
+      let rounds = [
+        { digits: 3, time: 3 },
+        { digits: 5, time: 4 },
+        { digits: 8, time: 7 },
+      ];
+
+      let currentRound = 0;
+      let generatedNumber = "";
+      let mistakes = 0;
+      let startedAt = Date.now();
+
+      /* Generate random digits */
+      function generateNumber(length) {
+        let result = "";
+        for (let i = 0; i < length; i++) {
+          result += Math.floor(Math.random() * 10);
+        }
+        return result;
+      }
+
+      /* Start Round */
+      function startRound() {
+        let round = rounds[currentRound];
+        document.getElementById("roundTitle").textContent =
+          GameManager.t("round") + " " + (currentRound + 1);
+
+        generatedNumber = generateNumber(round.digits);
+
+        let display = document.getElementById("numberDisplay");
+        display.textContent = generatedNumber;
+
+        let timeBar = document.getElementById("timeBar");
+        let totalTime = round.time;
+        let timeLeft = totalTime;
+
+        let interval = setInterval(() => {
+          timeLeft -= 0.1;
+          timeBar.style.width = (timeLeft / totalTime) * 100 + "%";
+
+          if (timeLeft <= 0) {
+            clearInterval(interval);
+            display.textContent = "";
+            document.getElementById("inputSection").style.display = "block";
+          }
+        }, 100);
+      }
+
+      /* Check Answer */
+      function checkAnswer() {
+        let input = document.getElementById("userInput").value;
+
+        if (input === generatedNumber) {
+          GameManager.playSfx("correct");
+          document.getElementById("message").textContent = GameManager.t("correctNext");
+
+          currentRound++;
+
+          if (currentRound >= rounds.length) {
+            setTimeout(() => {
+              const elapsedSeconds = Math.round((Date.now() - startedAt) / 1000);
+              const score = GameManager.completeLevel(2, {
+                timeRemaining: Math.max(0, 60 - elapsedSeconds),
+                correctAnswers: rounds.length,
+                totalQuestions: rounds.length,
+                mistakes: mistakes
+              });
+              GameManager.playSfx("correct");
+              document.getElementById("message").textContent = GameManager.t("levelComplete") + " " + GameManager.t("score") + ": " + score;
+              setTimeout(() => { window.location.href = "MenuTest.html"; }, 900);
+            }, 1000);
+            return;
+          }
+
+          document.getElementById("inputSection").style.display = "none";
+          document.getElementById("userInput").value = "";
+          document.getElementById("message").textContent = "";
+
+          setTimeout(startRound, 1000);
+        } else {
+          mistakes++;
+          GameManager.playSfx("wrong");
+          GameManager.handleLevelFail(2, GameManager.t("failed"));
+        }
+      }
+
+      startRound();
+    </script>
+  </body>
+</html>
